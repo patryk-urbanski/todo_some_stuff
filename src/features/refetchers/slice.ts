@@ -10,7 +10,7 @@ interface IRefetchersInitialState {
 };
 
 export const initialState: IRefetchersInitialState = {
-    tasks: false
+    tasks: false,
 };
 
 const refetchers = createSlice({

@@ -10,7 +10,7 @@ const apiCalls = () => {
         })
     };
 
-    const addEditTask = (id: string | number, formData: FormData) => {
+    const addEditTask = (id: string | number | null, formData: FormData) => {
         return fetchFromApi({
             path: `https://react.massivepixel.io/api/${apiUser}/${id}`,
             formDataRequest: generateFormDataRequest(formData, 'POST'),

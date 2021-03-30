@@ -19,7 +19,7 @@ export const generateFormDataRequest = (formData: FormData, method: HttpMethod) 
         method: method,
         body: formData,
         mode: 'cors' as RequestMode,
-        credentials: 'include' as RequestCredentials,
+        credentials: 'same-origin' as RequestCredentials,
     };
 };
 
