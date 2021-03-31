@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { Input, Label } from 'reactstrap';
+import { ITask } from '../../types';
 
 interface Props {
     value: boolean | number,
-    onSwitch: (id: number | string, isSelected: any) => void,
-    id: string | number,
+    onSwitch: (task: ITask, isSelected: any) => void,
+    task: ITask,
 };
 
 interface NumericConfig {
@@ -15,10 +16,10 @@ interface NumericConfig {
 const Checkbox = ({
     value,
     onSwitch,
-    id,
+    task,
 }: Props) => {
     const handleSwitch = (e: any) => {
-        onSwitch(id, e.target.checked);
+        onSwitch(task, e.target.checked);
     };
 
     const numericConfig: NumericConfig = {
@@ -32,7 +33,7 @@ const Checkbox = ({
         <Label check>
             <Input
                 type="checkbox"
-                onClick={handleSwitch}
+                onChange={handleSwitch}
                 checked={preparedValue}
             />
         </Label>

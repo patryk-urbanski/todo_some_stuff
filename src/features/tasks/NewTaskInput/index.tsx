@@ -1,11 +1,12 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-
 
 import { addEditTask } from '../../../redux/methods/tasks';
 
 import { Form as FinalForm, Field } from 'react-final-form';
 import { Label, Button, Form, Row} from 'reactstrap';
+
+import styles from './index.module.css';
 
 interface IForm {
     task: string,
@@ -39,13 +40,13 @@ const NewTaskInput = ({
                 onSubmit={handleOnSubmit}
                 render={({ handleSubmit }) => {
                     return (
-                        <Form onSubmit={handleSubmit}>
+                        <Form onSubmit={handleSubmit} className={styles.inputContainer}>
                             <Row className='m-0 p-0 d-flex flex-column'>
                                 <Label className='my-1'>New task</Label>
                                 <Field
                                     component={'input'}
                                     name='task'
-                                    placeholder={'For random project leave empty'}
+                                    placeholder={'What you have to do?'}
                                 />
                                 <Button
                                     className='my-1'

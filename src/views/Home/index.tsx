@@ -1,23 +1,35 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { ITask } from '../../types';
 import { RootState } from '../../redux/store';
 import { clearError } from '../../redux/methods/generic';
+import { getTasks, deleteTask, addEditTask } from '../../redux/methods/tasks';
+
 
 import ErrorModal from '../../features/globalStates/ErrorModal';
-import { getTasks } from '../../redux/methods/tasks';
 import TaskTable from '../../components/tables/TaskTable';
 import NewTaskInput from '../../features/tasks/NewTaskInput';
+import EditionModal from '../../features/tasks/EditionModal';
+
+interface IForm {
+    task: string,
+    id: string,
+    is_completed: number,
+};
 
 const mapStateToProps = (state: RootState) => ({
     error: state.global.error,
     forceRefetch: state.refetchers.tasks,
     tasks: state.tasks.tasks,
+    isLoading: state.global.isLoading,
 });
 
 const mapDispatch = {
     clearError,
     getTasks,
+    deleteTask,
+    addEditTask,
 };
 
 const connector = connect(mapStateToProps, mapDispatch);
@@ -30,7 +42,12 @@ const Home = ({
     forceRefetch,
     tasks,
     getTasks,
+    deleteTask,
+    addEditTask,
+    isLoading,
 }: ReduxProps) => {
+    const [ taskToEdit, setTaskToEdit ] = useState<null | ITask>(null);
+    const [ isModalOpen, setIsModalOpen ] = useState<boolean>(false);
 
     useEffect(() => {
         getTasks();
@@ -44,11 +61,56 @@ const Home = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [forceRefetch]);
 
+    const handleStartTaskEdition = (task: ITask) => {
+        setTaskToEdit(task);
+        setIsModalOpen(true);
+    };
+
+    const handleEditTask = async (form: IForm) => {
+        const dataToSend = new FormData();
+        const { task, id, is_completed } = form;
+        dataToSend.append('id', id);
+        dataToSend.append('task', task);
+        dataToSend.append('is_completed', is_completed.toString())
+
+        await addEditTask(id, dataToSend);
+        setIsModalOpen(false);
+    };
+
+    const handleSwitchAction = (taskObject: ITask, isChecked: number | boolean) => {
+        const dataToSend = new FormData();
+        const { task, id } = taskObject;
+
+        dataToSend.append('id', id);
+        dataToSend.append('task', task);
+        dataToSend.append('is_completed', isChecked.toString())
+
+        addEditTask(id, dataToSend)
+    }
+
     return (
-        <div className='w-100 h-100'>
-            <ErrorModal error={error} clearErrorHandler={clearError}/>
+        <div className='p-2'>
+            <ErrorModal
+                error={error}
+                clearErrorHandler={clearError}
+            />
             <NewTaskInput />
-            <TaskTable tasks={tasks} />
+            <TaskTable
+                isLoading={isLoading}
+                tasks={tasks}
+                deleteAction={deleteTask}
+                editAction={handleStartTaskEdition}
+                switchAction={handleSwitchAction}
+            />
+            {
+                taskToEdit &&
+                    <EditionModal
+                        task={taskToEdit}
+                        isOpen={isModalOpen}
+                        setIsOpen={setIsModalOpen}
+                        onConfirm={handleEditTask}
+                    />
+            }
         </div>
     );
 };
