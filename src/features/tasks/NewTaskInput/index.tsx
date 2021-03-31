@@ -36,11 +36,16 @@ const NewTaskInput = ({
 
     return (
         <div className='m-3'>
-            <FinalForm 
+            <FinalForm
                 onSubmit={handleOnSubmit}
-                render={({ handleSubmit }) => {
+                render={({ handleSubmit, form }) => {
                     return (
-                        <Form onSubmit={handleSubmit} className={styles.inputContainer}>
+                        <Form
+                            onSubmit={async (event) => {
+                                await handleSubmit(event);
+                                form.reset();
+                            }}
+                            className={styles.inputContainer}>
                             <Row className='m-0 p-0 d-flex flex-column'>
                                 <Label className='my-1'>New task</Label>
                                 <Field
