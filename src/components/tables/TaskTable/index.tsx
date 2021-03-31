@@ -54,7 +54,7 @@ const TaskTable = ({
             </div>
         )
     };
-    return tasksToDisplay && tasksToDisplay.length > 0 ? (
+    return (
         <Table hover responsive>
             <thead>
                 <tr>
@@ -64,8 +64,8 @@ const TaskTable = ({
                 </tr>
             </thead>
             <tbody>
-                {
-                    (tasksToDisplay as ITask[]).map((task: ITask) => (
+                { tasksToDisplay && tasksToDisplay.length > 0 
+                    ? (tasksToDisplay as ITask[]).map((task: ITask) => (
                         <tr key={`${task.id}-${task.candidate}`}>
                             <th>{task.task}</th>
                             <th className='d-flex align-items-center'>
@@ -85,6 +85,7 @@ const TaskTable = ({
                             </th>
                         </tr>
                     ))
+                    : <p>It seems like you have nothing to do.</p>
                 }
             </tbody>
             <tfoot>
@@ -97,7 +98,7 @@ const TaskTable = ({
                 </tr>
             </tfoot>
         </Table>
-    ) : <p>It seems like you have nothing to do.</p>
+    );
 };
 
 export default TaskTable;
