@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Table, Button, Spinner } from 'reactstrap';
 import { ITask } from '../../../types';
@@ -19,6 +19,20 @@ const TaskTable = ({
     editAction,
     isLoading,
 }: Props) => {
+    const [ tasksToDisplay, setTasksToDisplay ] = useState<ITask[] | []>(tasks)
+    const [ isShowOnlyDone, setIsShowOnlyDone ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if(tasks) {
+            if(isShowOnlyDone) {
+                setTasksToDisplay(tasks.filter(task => task.is_completed === 1))
+            }
+            else {
+                setTasksToDisplay(tasks)
+            }
+        }
+    }, [tasks, isShowOnlyDone])
+
     const handleSwitchIsCompleted = (task: ITask, isChecked: number) => {
         switchAction(task, isChecked ? 1 : 0)
     };
@@ -31,6 +45,8 @@ const TaskTable = ({
         editAction(task)
     };
 
+    const toggleShowOnlyDone = () => setIsShowOnlyDone(!isShowOnlyDone);
+
     if (isLoading) {
         return (
             <div className='w-100 h-100 d-flex justify-content-center align-items-center'>
@@ -38,8 +54,7 @@ const TaskTable = ({
             </div>
         )
     };
-
-    return tasks && tasks.length > 0 ? (
+    return tasksToDisplay && tasksToDisplay.length > 0 ? (
         <Table hover responsive>
             <thead>
                 <tr>
@@ -50,7 +65,7 @@ const TaskTable = ({
             </thead>
             <tbody>
                 {
-                    tasks.map(task => (
+                    (tasksToDisplay as ITask[]).map((task: ITask) => (
                         <tr key={`${task.id}-${task.candidate}`}>
                             <th>{task.task}</th>
                             <th className='d-flex align-items-center'>
@@ -62,16 +77,25 @@ const TaskTable = ({
                             </th>
                             <th>
                                 <Button color='success' onClick={handleOnEdit(task)}>
-                                        <span>EDIT</span>
-                                    </Button>
-                                    <Button color='danger' onClick={handleOnDelete(task.id)}>
-                                        <span>REMOVE</span>
+                                    <span>EDIT</span>
+                                </Button>
+                                <Button color='danger' onClick={handleOnDelete(task.id)}>
+                                    <span>REMOVE</span>
                                 </Button>
                             </th>
                         </tr>
                     ))
                 }
             </tbody>
+            <tfoot>
+                <tr>
+                    <th>
+                        <Button color='warning' onClick={toggleShowOnlyDone}>
+                            <span>{isShowOnlyDone ? 'SHOW ALL' : 'SHOW ONLY DONE'}</span>
+                        </Button>
+                    </th>
+                </tr>
+            </tfoot>
         </Table>
     ) : <p>It seems like you have nothing to do.</p>
 };
